@@ -1,0 +1,74 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
+    signingConfigs {
+        debug {
+            keyAlias 'xiaoguo'
+            keyPassword '123456'
+            storeFile file("./keystore/arouter.jks")
+            storePassword '123456'
+        }
+        release {
+            keyAlias 'xiaoguo'
+            keyPassword '123456'
+            storeFile file("./keystore/arouter.jks")
+            storePassword '123456'
+        }
+    }
+    defaultConfig {
+        applicationId "tsou.cn.myaroutertest"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            buildConfigField "boolean", "USE_CANARY", "true"
+            minifyEnabled false
+            shrinkResources false
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            signingConfig signingConfigs.release
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            buildConfigField "boolean", "USE_CANARY", "false"
+            minifyEnabled true
+            // Zipalign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources true
+            // 前一部分代表系统默认的android程序的混淆文件，该文件已经包含了基本的混淆声明，后一个文件是自己的定义混淆文件
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    if (isNeedHomeModule.toBoolean()) {
+        compile project(':module_home')
+    }
+    if (isNeedChatModule.toBoolean()) {
+        compile project(':module_chat')
+    }
+    if (isNeedRecomModule.toBoolean()) {
+        compile project(':module_recom')
+    }
+    if (isNeedMeModule.toBoolean()) {
+        compile project(':module_me')
+    }
+    compile 'com.android.support:appcompat-v7:26.+'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
+}
